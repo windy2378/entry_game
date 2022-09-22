@@ -23,21 +23,62 @@
         };
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
+        
+        let id = '';
+        login.addEventListener('click', (e)=>{
+            let log_id = prompt('아이디를 입력 해 주세요.')
+            id = log_id
+            document.getElementById('idText').innerHTML=id;
+        });
 
-        submit.addEventListener('click', (e)=>{
-            
+        submit.addEventListener('click',(e)=>{
+            if(id != ''){
+                if(document.getElementById('comment').value){
+                set(push(ref(database, '/')),{
+                    comment: id+' : '+document.getElementById('comment').value
+                });
+                document.getElementById('comment').value='';
+            }
+                else{
+                    alert('댓글을 입력 해 주세요!')
+                }
+            }
+            else{
+                alert('로그인을 해 주세요!')
+            }
+        })
+
+        onValue(ref(database, '/'), (snapshot)=>{
+            document.getElementById('list').innerHTML="";
+            snapshot.forEach((childSnapshot)=>{
+
+                let div = document.createElement('div');
+                div.setAttribute('class', 'card card-body mt-3');
+                div.setAttribute('id', 'div'+childSnapshot.key);
+                document.getElementById('list').appendChild(div);
+
+                let div2 = document.createElement('div');
+                div2.setAttribute('id', 'div2'+childSnapshot.key);
+                document.getElementById('div'+childSnapshot.key).appendChild(div2);
+
+                let span = document.createElement('span');
+                let spanText = document.createTextNode(childSnapshot.val().comment);
+                span.appendChild(spanText);
+                document.getElementById('div2'+childSnapshot.key).appendChild(span);
+            });
         });
       </script>
 </head>
 
 <body class="container mb-5">
     <div class="content mt-3">
-        <span class="text-dark navbar-brand" style="font-size: 3em;">兀의 엔트리 게임</span>
-        <button class="btn btn-info" type="submit" id="submit">로그인</button>
-        <button class="btn btn-warning" type="submit" id="submit">회원가입</button>
+        <span class="text-dark navbar-brand" style="font-size: 3em;">兀의 엔트리 게임&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <span id="idText"></span>
+        <button class="btn btn-info" type="submit" id="login">로그인</button>
 
 
-        <div class="col-4">     <div class="card h-100">
+        <div class="row">
+        <div class="col-4 mt-3">     <div class="card h-100">
             <img src="https://ifh.cc/g/GMjX1v.jpg" class="card-img">
             <div class="card-body">
                 <h4 class="text-center">RPG 쭈꾸미</h4>
@@ -46,16 +87,16 @@
                 <button type="button" class="btn btn-primary container" onClick="window.open('http://naver.me/57N3oNBg');">플레이</button>
             </div>
           </div></div>
-        <div class="col-4">   <div class="card h-100">
+        <div class="col-4 mt-3">   <div class="card h-100">
             <img src="https://ifh.cc/g/chV9nf.jpg">
             <div class="card-body">
                 <h4 class="text-center">레이드</h4>
                 <div class="text-center">무기와 스킬을 골라 레티욕이라는 이름의 거미를 처치하는 게임</div>
-                <div class="text-danger text-center">*사실 스토리는 친구가 만들어 줬다는건 안비밀</div>
+                <div class="text-danger text-center">*스토리는 친구가 만들어 줬다는건 안비밀</div>
                 <button type="button" class="btn btn-primary container" onClick="window.open('http://naver.me/FwkqEDxy');">플레이</button>
             </div>
           </div></div>
-        <div class="col-4">    <div class="card h-100">
+        <div class="col-4 mt-3">    <div class="card h-100">
             <img src="https://ifh.cc/g/D2htQh.png">
             <div class="card-body">
                 <h4 class="text-center">의병 게임</h4>
@@ -64,6 +105,10 @@
                 <button type="button" class="btn btn-primary container" onClick="window.open('http://naver.me/GYToVhz2');">플레이</button>
             </div>
           </div>
-    </div>
+    </div></div>
+
+    <input type="text" id="comment" placeholder="댓글을 쓰세요." class="form-control mt-3">
+    <button type="submit" id="submit" class="btn btn-dark mt-2">댓글 쓰기</button>
+    <div id="list"></div>
 </body>
 </html>
